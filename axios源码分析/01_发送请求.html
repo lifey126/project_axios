@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./node_modules/axios/dist/mine-axios.js"></script>
+</head>
+<body>
+    <script>
+        //构造函数
+        function Axios(config){
+            //初始化
+            this.defaults = config; //创建default默认属性
+            this.intercepters = {
+                request: {},
+                response: {}
+            }
+        }
+        //原型添加相关方法
+        Axios.prototype.request = function(config){
+            console.log('发送AJAX请求 请求类型为' + config.method)
+        }
+        Axios.prototype.get = function(config){
+            return this.request({method:'GET'})
+        }
+        Axios.prototype.post = function(config){
+            return this.request({method:'POST'})
+        }
+
+        //声明函数
+        function createInstance(confgi){
+            //实例化对象
+            let context = new Axios()
+            //创建请求函数
+            let instance = Axios.prototype.request.bind(context)
+            Object.keys(Axios.prototype).forEach(key=>{
+                instance[key] = Axios.prototype[key].bind(context)
+            })
+            //添加属性 default intetceptors
+            Object.keys(context).forEach(key=>{
+                instance[key] = context[key]
+            })
+            return instance
+        }
+
+        let axios = createInstance({method:'GET'})
+        //发送请求
+        axios({method:'GET'})
+        axios.post({})
+    </script>
+</body>
+</html>
